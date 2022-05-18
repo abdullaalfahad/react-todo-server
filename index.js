@@ -23,6 +23,13 @@ async function run() {
             const result = await tasksCollection.insertOne(task);
             res.send(result);
         })
+
+        app.get('/tasks', async (req, res) => {
+            const query = {};
+            const cursor = tasksCollection.find(query);
+            const tasks = await cursor.toArray();
+            res.send(tasks);
+        })
     }
     finally { }
 }
