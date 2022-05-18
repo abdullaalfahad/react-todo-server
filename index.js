@@ -12,12 +12,21 @@ app.use(express.json());
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.50dwp.mongodb.net/?retryWrites=true&w=majority`;
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
-client.connect(err => {
-    const collection = client.db("test").collection("devices");
-    // perform actions on the collection object
-    console.log('db connected')
-    client.close();
-});
+
+async function run() {
+    try {
+        await client.connect();
+        const tasksCollection = client.db('todo').collection('tasks');
+
+        app.post('/tasks', async (req, res) => {
+            const task = req.body;
+            const result = await tasksCollection.insertOne(task);
+            res.send(result);
+        })
+    }
+    finally { }
+}
+run().catch(console.dir);
 
 
 app.get('/', async (req, res) => {
